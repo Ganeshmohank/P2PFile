@@ -1,0 +1,43 @@
+# If you prefer the allow list template instead of the deny list, see community template:
+# https://github.com/github/gitignore/blob/main/community/Golang/Go.AllowList.gitignore
+#
+
+# Binaries for programs and plugins
+/bin/
+/release/
+/pkg/
+
+# Compiled Object files, Static and Dynamic libs (Shared Objects)
+*.o
+*.a
+*.so
+
+# Executables files
+*.exe
+*.out
+
+# Dependency directories
+/vendor/
+/go.sum
+
+# Compiled Go binary
+*.test
+
+# Output of the go coverage tool, specifically when used with LiteIDE
+*.out
+
+# Logs
+*.log
+
+# Configuration files
+*.yaml
+*.yml
+
+# OS-generated files
+.DS_Store
+Thumbs.db
+
+# IDE-specific files
+.idea/
+.vscode/
+
