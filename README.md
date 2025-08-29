@@ -1,145 +1,135 @@
-# P2PFile
+# P2PFile  
 
-P2PFile is a robust, distributed, peer-to-peer Content Addressable Storage (CAS) system implemented in Go. It provides a scalable and efficient solution for storing and retrieving data across a network of nodes.
+**P2PFile** is a distributed, peer-to-peer Content Addressable Storage (CAS) framework developed in Go. It is designed to provide a dependable, scalable, and secure approach to sharing and storing files across multiple nodes without relying on a central server.  
 
-## Table of Contents
+## Table of Contents  
 
-- [Features](#features)
-- [Architecture](#architecture)
-- [Resouces](#resources)
-- [Getting Started](#getting-started)
-  - [Prerequisites](#prerequisites)
-  - [Installation](#installation)
-  - [Usage](#usage)
-- [Contributing](#contributing)
-- [License](#license)
-
-
-## Features
-
-- **Content Addressable Storage (CAS)**: Ensures data integrity and deduplication.
-- **Peer-to-Peer Architecture**: Enables decentralized data storage and retrieval.
-- **Distributed System**: Scales horizontally for increased storage capacity and fault tolerance.
-- **Encryption**: Provides data security with AES encryption.
-- **Flexible Transport Layer**: Supports TCP with potential for easy expansion to other protocols.
-- **Custom Encoding**: Uses GOB encoding for efficient data serialization.
-
-## Architecture
-
-P2PFile is built on several key components:
-
-1. **FileServer**: The core component managing file operations and peer interactions.
-2. **Store**: Handles local file storage with a customizable path transform function.
-3. **TCPTransport**: Manages network communications between peers.
-
-## Resources
-
-### Educational Videos
-
-These educational videos provided foundational knowledge and inspiration for building P2PFile:
-
-- **Distributed Computing - DFS** by [Perfect CE](https://www.youtube.com/@perfectcomputerengineer): [Watch on YouTube](https://youtu.be/Xhi3hqbiXNM)
-- **Big Data Analysis - DFS** by [Perfect CE](https://www.youtube.com/@perfectcomputerengineer): [Watch on YouTube](https://youtu.be/McTWc6N-pBg)
-- **Architecture of a DFS** by [Knowledge Hub](https://www.youtube.com/@knowledgehub9741): [Watch on YouTube](https://youtu.be/QmNlluPbEEk)
-- **Hadoop - HDFS** by [SimpliLearn](https://www.youtube.com/@SimplilearnOfficial): [Watch on YouTube](https://youtu.be/6apXsm_25s0)
-
-- **[Talk on p2p implementation](https://youtu.be/waVtYYSXkXU?si=UFP2YRSx0dxZ1fRc)**
-- **[Additional](https://youtu.be/eRndYq8iTio?si=5XuYlcs6FgDIbkxC)**
+- [Features](#features)  
+- [System Design](#system-design)  
+- [Quick Start](#quick-start)  
+  - [Requirements](#requirements)  
+  - [Setup](#setup)  
+  - [How to Use](#how-to-use) 
 
 ---
 
-## Getting Started
+## Features  
 
-### Prerequisites
+- **Content Addressable Storage (CAS):** Files are stored and retrieved by their content hash, guaranteeing integrity and removing duplicates.  
+- **Peer-to-Peer Network:** Data is distributed and fetched directly between peers with no single point of failure.  
+- **Horizontal Scaling:** Add more nodes to expand capacity and increase fault tolerance.  
+- **Built-in Encryption:** Secures files in transit and at rest using AES.  
+- **Transport Flexibility:** Currently uses TCP but can be extended to other protocols.  
+- **Efficient Encoding:** Utilizes GOB encoding for fast, compact data serialization.  
 
-- Go 1.15 or higher
+---
 
-### Installation
+## System Design  
 
-1. Clone the repository:
+P2PFile is composed of three main building blocks:  
+
+1. **FileServer** – Orchestrates file operations and manages communication between peers.  
+2. **Store** – Responsible for local file storage, with customizable directory and naming logic.  
+3. **TCPTransport** – Handles peer-to-peer connections and message exchange.  
+
+---
+
+## Quick Start  
+
+### Requirements  
+
+- Go version **1.15+**  
+
+### Setup  
+
+1. Clone the repository:  
    ```bash
    git clone https://github.com/Ganeshmohank/P2PFile
    cd P2PFile
-   ```
-2. Build
+   ```  
+
+2. Install dependencies and build:  
    ```bash
    go mod tidy
-   make build 
-   ```
-## Usage
+   make build
+   ```  
 
-P2PFile comes with a Makefile for easy building, running, and testing.
+---
 
-### Building the Application
-To build the application, run:
+## How to Use  
+
+P2PFile includes a Makefile for compiling, running, and testing.  
+
+### Build & Run  
+
 ```bash
 make run
-```
-This command will build the application and then execute it.
+```  
 
-### Running Tests
+This compiles the project and starts the application.  
 
-To run the tests for all packages, use:
+### Run Tests  
+
 ```bash
 make test
-```
-### Understanding the Default Behavior
+```  
 
-The `main.go` file sets up a network of three file servers:
+Executes all package tests.  
 
-1. Server 1 listens on port 3000
-2. Server 2 listens on port 7000
-3. Server 3 listens on port 5000 and connects to the other two servers
+---
 
-The program then demonstrates the functionality by:
+### Default Demo Setup  
 
-1. Storing 20 files (named "picture_0.png" to "picture_19.png") on Server 3
-2. Immediately deleting these files from Server 3's local storage
-3. Retrieving these files from the network
-4. Printing the contents of each retrieved file
+By default, `main.go` launches three servers:  
 
-This showcases the distributed nature of P2PFile, where files can be retrieved from the network even if they're not present in the local storage of the requesting node.
+- **Server 1** → `:3000`  
+- **Server 2** → `:7000`  
+- **Server 3** → `:5000` (bootstraps connections to Server 1 and Server 2)  
 
-### Customizing the Network
+The demo flow:  
+1. Store 20 files (`picture_0.png` … `picture_19.png`) on Server 3.  
+2. Immediately delete them from Server 3’s local store.  
+3. Retrieve the same files from the network.  
+4. Print their contents to confirm recovery from peers.  
 
-- To create your own network of P2PFile nodes, you can modify the `main.go` file. Use the `makeServer` function to create new server instances:
+This shows that once a file is placed in the network, it can be accessed even if removed from the originating node.  
 
+---
+
+### Creating Your Own Network  
+
+To spin up custom nodes, edit `main.go` and call:  
+
+```go
+server := makeServer(listenAddr, bootstrapNodes...)
+```  
+
+- `listenAddr` → the port/address the server listens on (e.g., `":4000"`)  
+- `bootstrapNodes` → addresses of peers to connect to (optional for the first node)  
+
+Start a node with:  
+```go
+go server.Start()
+```  
+
+---
+
+### File Operations  
+
+- **Store a file:**  
   ```go
-  server := makeServer(listenAddr, bootstrapNodes...)
-  ```
-  Where:
+  data := bytes.NewReader([]byte("file contents"))
+  server.Store("myFile.txt", data)
+  ```  
 
-  - listenAddr is the address the server will listen on (e.g., ":3000")
-  - bootstrapNodes are the addresses of existing nodes to connect to (can be empty for the first node)
-
-- Then start each server with:
+- **Retrieve a file:**  
   ```go
-  go server.Start()
-  ```
+  r, err := server.Get("myFile.txt")
+  if err != nil {
+    log.Fatal(err)
+  }
+  contents, _ := io.ReadAll(r)
+  fmt.Println(string(contents))
+  ```  
 
-- Storing and Retrieving Files
-
-  - To store a file:
-    ```go
-    goCopydata := bytes.NewReader([]byte("file contents"))
-    server.Store("filename.txt", data)
-    ```
-  - To retrieve a file:
-    ```go
-    goCopyr, err := server.Get("filename.txt")
-    if err != nil {
-      log.Fatal(err)
-    }
-    contents, err := io.ReadAll(r)
-    if err != nil {
-      log.Fatal(err)
-    }
-    fmt.Println(string(contents))
-    ```
-## Contributing
-
-Contributions are welcome! Please read the [contribution guidelines](CONTRIBUTING.md) before submitting a pull request.
-
-## License
-
-This project is licensed under the Apache-2.0 license - see the [LICENSE](LICENSE) file for details.
+---
